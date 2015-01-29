@@ -14,6 +14,6 @@ function curry(callable $callable) {
  * @param $callable
  * @return CurriedFunction
  */
-function curryRight(callable $callable) {
+function curry_right(callable $callable) {
     return CurriedFunction::right($callable, array_slice(func_get_args(), 1));
 }

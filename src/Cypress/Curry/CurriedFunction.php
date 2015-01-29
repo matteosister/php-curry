@@ -23,35 +23,73 @@ class CurriedFunction
     private $args;
 
     /**
-     * @param callable $callable
-     * @param string   $direction
-     * @param array    $args
+     * @var int
      */
-    private function __construct(callable $callable, $direction, array $args = array())
+    private $totalArgs;
+
+    /**
+     * @param $callable
+     * @param string $direction
+     * @param array $args
+     * @param null $totalArgs
+     */
+    private function __construct($callable, $direction, array $args = array(), $totalArgs = null)
     {
+        $this->totalArgs = $totalArgs;
         $this->args = $args;
         $this->direction = $direction;
         $this->callable = $callable;
     }
 
+    public function __toString()
+    {
+        return sprintf(
+            '%s curried version of function "%s"',
+            self::CURRY_L === $this->direction ? 'left' : 'right',
+            is_array($this->callable) ? $this->callable[1] : $this->callable
+        );
+    }
+
     /**
-     * @param callable $callable
+     * @param $callable
      * @param array $args
      * @return CurriedFunction
      */
-    public static function left(callable $callable, array $args = array())
+    public static function left($callable, array $args = array())
     {
         return new CurriedFunction($callable, self::CURRY_L, $args);
     }
 
     /**
-     * @param callable $callable
+     * @param $callable
+     * @param array $args
+     * @param null $totalArgs
+     * @return CurriedFunction
+     */
+    public static function leftFixed($callable, array $args = array(), $totalArgs = null)
+    {
+        return new CurriedFunction($callable, self::CURRY_L, $args, $totalArgs);
+    }
+
+    /**
+     * @param $callable
      * @param array $args
      * @return CurriedFunction
      */
-    public static function right(callable $callable, array $args = array())
+    public static function right($callable, array $args = array())
     {
          return new CurriedFunction($callable, self::CURRY_R, $args);
+    }
+
+    /**
+     * @param $callable
+     * @param array $args
+     * @param null $totalArgs
+     * @return CurriedFunction
+     */
+    public static function rightFixed($callable, array $args = array(), $totalArgs = null)
+    {
+        return new CurriedFunction($callable, self::CURRY_R, $args, $totalArgs);
     }
 
     /**
@@ -59,6 +97,14 @@ class CurriedFunction
      */
     private function totalArgs()
     {
+        if (! is_null($this->totalArgs)) {
+            return $this->totalArgs;
+        }
+        if (is_array($this->callable)) {
+            $refl = new \ReflectionClass($this->callable[0]);
+            $method = $refl->getMethod($this->callable[1]);
+            return count($method->getParameters());
+        }
         return count($this->getReflection()->getParameters());
     }
 
@@ -111,7 +157,7 @@ class CurriedFunction
      * @param $args
      * @return mixed
      */
-    public function execute($args)
+    private function execute($args)
     {
         return call_user_func_array($this->callable, $this->isLeftCurried() ? $args : array_reverse($args));
     }

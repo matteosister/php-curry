@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit colors="true"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="php-curry test suite">
+            <directory>tests/Cypress/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/Cypress/</directory>
+        </whitelist>
+    </filter>
+</phpunit>
