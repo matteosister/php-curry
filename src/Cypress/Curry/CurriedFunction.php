@@ -47,15 +47,19 @@ class CurriedFunction
     public function __toString()
     {
         return sprintf(
-            '%s curried version of function "%s"',
+            '%s curried version of function "%s", binded params: %s',
             self::CURRY_L === $this->direction ? 'left' : 'right',
-            is_array($this->callable) ? $this->callable[1] : $this->callable
+            is_array($this->callable) ? $this->callable[1] : $this->callable,
+            implode(', ', $this->args)
         );
     }
 
     /**
-     * @param $callable
-     * @param array $args
+     * Left curry constructor
+     *
+     * @param callable $callable a callable
+     * @param array    $args     function arguments
+     *
      * @return CurriedFunction
      */
     public static function left($callable, array $args = array())
@@ -64,9 +68,12 @@ class CurriedFunction
     }
 
     /**
-     * @param $callable
-     * @param array $args
-     * @param null $totalArgs
+     * Left curried
+     *
+     * @param callable $callable a callable
+     * @param array $args        function arguments
+     * @param null $totalArgs    total arguments
+     *
      * @return CurriedFunction
      */
     public static function leftFixed($callable, array $args = array(), $totalArgs = null)
@@ -75,8 +82,9 @@ class CurriedFunction
     }
 
     /**
-     * @param $callable
-     * @param array $args
+     * @param callable $callable a callable
+     * @param array $args        function arguments
+     *
      * @return CurriedFunction
      */
     public static function right($callable, array $args = array())
@@ -85,9 +93,9 @@ class CurriedFunction
     }
 
     /**
-     * @param $callable
-     * @param array $args
-     * @param null $totalArgs
+     * @param callable $callable  a callable
+     * @param array $args         function arguments
+     * @param null|int $totalArgs fix the curry at the given argument number
      * @return CurriedFunction
      */
     public static function rightFixed($callable, array $args = array(), $totalArgs = null)
@@ -128,6 +136,8 @@ class CurriedFunction
     }
 
     /**
+     * True if the function has all the parameters and it's ready to fire
+     *
      * @return bool
      */
     private function isFullfilled()
@@ -136,6 +146,8 @@ class CurriedFunction
     }
 
     /**
+     * Invoker
+     *
      * @return $this|CurriedFunction|mixed
      */
     public function __invoke()
