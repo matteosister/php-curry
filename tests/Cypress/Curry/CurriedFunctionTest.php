@@ -27,7 +27,7 @@ class CurriedFunctionTest extends \PHPUnit_Framework_TestCase
         $strpos = CurriedFunction::left('strpos');
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strpos);
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strpos('test'));
-        $this->assertEquals(1, $strpos('test', 'e', 0));
+        $this->assertEquals(1, $strpos('test', 'e'));
     }
 
     public function test_curried_function_by_name_and_fixed_length()

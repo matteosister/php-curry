@@ -1,0 +1,18 @@
+dependencies:
+  pre:
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/xdebug.ini
+  cache_directories:
+    - "~/.composer"
+  override:
+    - composer install --no-progress
+
+machine:
+  php:
+    version: 5.6.2
+
+test:
+  override:
+    - vendor/bin/phpunit --coverage-clover=coverage.clover
+  post:
+    - wget https://scrutinizer-ci.com/ocular.phar
+    - php ocular.phar code-coverage:upload --access-token="e4c700772ac67a0210fa0054a54c34bfb5eac71883df0bd2d23ccb03e264be14" --format=php-clover coverage.clover

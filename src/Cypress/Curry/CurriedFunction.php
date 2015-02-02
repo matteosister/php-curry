@@ -41,6 +41,9 @@ class CurriedFunction
         $this->callable = $callable;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return sprintf(
@@ -103,9 +106,9 @@ class CurriedFunction
         if (is_array($this->callable)) {
             $refl = new \ReflectionClass($this->callable[0]);
             $method = $refl->getMethod($this->callable[1]);
-            return count($method->getParameters());
+            return $method->getNumberOfRequiredParameters();
         }
-        return count($this->getReflection()->getParameters());
+        return $this->getReflection()->getNumberOfRequiredParameters();
     }
 
     /**
