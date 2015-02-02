@@ -28,10 +28,10 @@ class CurriedFunction
     private $totalArgs;
 
     /**
-     * @param $callable
-     * @param string $direction
-     * @param array $args
-     * @param null $totalArgs
+     * @param callable $callable  a callable
+     * @param string   $direction curry direction
+     * @param array    $args      function arguments
+     * @param null|int $totalArgs fix the curry at the given argument number
      */
     private function __construct($callable, $direction, array $args = array(), $totalArgs = null)
     {
