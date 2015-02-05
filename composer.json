@@ -1,5 +1,5 @@
 {
-    "name": "cypress/php-curry",
+    "name": "cypresslab/php-curry",
     "description": "Curried functions in PHP",
     "keywords": ["curry", "functional-programming"],
     "license": "MIT",
