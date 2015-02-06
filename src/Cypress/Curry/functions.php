@@ -4,39 +4,87 @@ namespace Cypress\Curry;
 
 /**
  * @param callable $callable
- * @return CurriedFunction
+ * @return callable
  */
 function curry(callable $callable)
 {
-    return CurriedFunction::left($callable, array_slice(func_get_args(), 1));
-}
-
-/**
- * @param int      $argsNumber
- * @param callable $callable
- *
- * @return CurriedFunction
- */
-function curry_fixed($argsNumber, callable $callable)
-{
-    return CurriedFunction::leftFixed($callable, array_slice(func_get_args(), 2), $argsNumber);
+    return _curry_array_args($callable, _rest(func_get_args()));
 }
 
 /**
  * @param callable $callable
- * @return CurriedFunction
+ * @return callable
  */
 function curry_right(callable $callable)
 {
-    return CurriedFunction::right($callable, array_slice(func_get_args(), 1));
+    return _curry_array_args($callable, _rest(func_get_args()), false);
 }
 
 /**
- * @param $argsNumber
  * @param callable $callable
- * @return CurriedFunction
+ * @param $args
+ * @param bool $left
+ * @return callable
  */
-function curry_right_fixed($argsNumber, callable $callable)
+function _curry_array_args(callable $callable, $args, $left = true)
 {
-    return CurriedFunction::right($callable, array_slice(func_get_args(), 2), $argsNumber);
+    return function () use ($callable, $args, $left) {
+        if (_is_fullfilled($callable, $args)) {
+            return _execute($callable, $args, $left);
+        }
+        $newArgs = array_merge($args, func_get_args());
+        if (_is_fullfilled($callable, $newArgs)) {
+            return _execute($callable, $newArgs, $left);
+        }
+        return _curry_array_args($callable, $newArgs, $left);
+    };
+}
+
+/**
+ * @internal
+ * @param $callable
+ * @param $args
+ * @param $left
+ * @return mixed
+ */
+function _execute($callable, $args, $left)
+{
+    return call_user_func_array($callable, $left ? $args : array_reverse($args));
+}
+
+/**
+ * @internal
+ * @param array $args
+ * @return array
+ */
+function _rest(array $args)
+{
+    return array_slice($args, 1);
+}
+
+/**
+ * @internal
+ * @param callable $callable
+ * @param $args
+ * @return bool
+ */
+function _is_fullfilled(callable $callable, $args)
+{
+    return count($args) === _number_of_required_params($callable);
+}
+
+/**
+ * @internal
+ * @param $callable
+ * @return int
+ */
+function _number_of_required_params($callable)
+{
+    if (is_array($callable)) {
+        $refl = new \ReflectionClass($callable[0]);
+        $method = $refl->getMethod($callable[1]);
+        return $method->getNumberOfRequiredParameters();
+    }
+    $refl = new \ReflectionFunction($callable);
+    return $refl->getNumberOfRequiredParameters();
 }
