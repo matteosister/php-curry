@@ -34,6 +34,16 @@ In PHP we still need to rely on a wrapper to simulate the behavior
 composer require cypresslab/php-curry
 ```
 
+In your PHP scripts (with composer autoloader in place) just import the namespace and use it!
+
+``` php
+use Cypress\Curry as C;
+
+$chunker = C\curry('array_chunk', ['a', 'b']);
+var_dump($chunker(1)); // output [['a'], ['b']]
+var_dump($chunker(2)); // output [['a', 'b']]
+```
+
 ### Right to left
 
 It's possible to curry a function from left (default) or from right.
