@@ -9,7 +9,7 @@ class CurriedFunctionTest extends \PHPUnit_Framework_TestCase
 {
     public function test_curried_lambda()
     {
-        $add = CurriedFunction::left(function ($a, $b) { return $a + $b; });
+        $add = C\curry(function ($a, $b) { return $a + $b; });
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $add);
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $add(1));
         $this->assertEquals(2, $add(1, 1));
@@ -33,7 +33,7 @@ class CurriedFunctionTest extends \PHPUnit_Framework_TestCase
 
     public function test_curried_object_method()
     {
-        $add = CurriedFunction::left(array(new TestSubject(), 'add2'));
+        $add = C\curry(array(new TestSubject(), 'add2'));
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $add);
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $add(1));
         $this->assertEquals(2, $add(1, 1));
@@ -41,7 +41,7 @@ class CurriedFunctionTest extends \PHPUnit_Framework_TestCase
 
     public function test_curried_function_by_name()
     {
-        $strpos = CurriedFunction::left('strpos');
+        $strpos = C\curry('strpos');
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strpos);
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strpos('test'));
         $this->assertEquals(1, $strpos('test', 'e'));
@@ -49,7 +49,7 @@ class CurriedFunctionTest extends \PHPUnit_Framework_TestCase
 
     public function test_right_curried_function_by_name()
     {
-        $strposR = CurriedFunction::right('strpos');
+        $strposR = C\curry_right('strpos');
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strposR);
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strposR('test'));
         $this->assertEquals(1, $strposR('e', 'test'));
@@ -57,7 +57,7 @@ class CurriedFunctionTest extends \PHPUnit_Framework_TestCase
 
     public function test_curried_function_by_name_and_fixed_length()
     {
-        $strpos = CurriedFunction::leftFixed('strpos', array(), 2);
+        $strpos = C\curry_fixed(2, 'strpos');
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strpos);
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strpos('test'));
         $this->assertEquals(1, $strpos('test', 'e'));
@@ -65,7 +65,7 @@ class CurriedFunctionTest extends \PHPUnit_Framework_TestCase
 
     public function test_right_curried_function_by_name_and_fixed_length()
     {
-        $strpos = CurriedFunction::rightFixed('strpos', array(), 2);
+        $strpos = C\curry_right_fixed(2, 'strpos');
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strpos);
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strpos());
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $strpos('e'));
@@ -74,14 +74,14 @@ class CurriedFunctionTest extends \PHPUnit_Framework_TestCase
 
     public function test_function_without_params()
     {
-        $return0 = CurriedFunction::left(function () { return 0; });
+        $return0 = C\curry(function () { return 0; });
         $this->assertInstanceOf('Cypress\Curry\CurriedFunction', $return0);
         $this->assertEquals(0, $return0());
     }
 
     public function test_toString()
     {
-        $strpos = CurriedFunction::leftFixed('strpos', array(), 2);
+        $strpos = C\curry_fixed(2, 'strpos');
         $this->assertContains('left curried', $strpos->__toString());
         $this->assertContains('strpos', $strpos->__toString());
         $this->assertContains('test_string', $strpos('test_string')->__toString());

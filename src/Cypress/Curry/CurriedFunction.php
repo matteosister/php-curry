@@ -165,7 +165,7 @@ class CurriedFunction
                 return $this->execute($newArgs);
             }
         }
-        return new self($this->callable, $this->direction, $newArgs);
+        return new self($this->callable, $this->direction, $newArgs, $this->totalArgs());
     }
 
     /**
