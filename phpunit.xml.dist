@@ -12,13 +12,13 @@
         syntaxCheck                 = "false" >
     <testsuites>
         <testsuite name="php-curry test suite">
-            <directory>tests/Cypress/</directory>
+            <file>tests/Cypress/Curry/functions_test.php</file>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src/Cypress/</directory>
+            <directory suffix=".php">src/Cypress/Curry</directory>
         </whitelist>
     </filter>
 </phpunit>
