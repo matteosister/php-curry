@@ -6,7 +6,7 @@ namespace Cypress\Curry;
  * @param callable $callable
  * @return callable
  */
-function curry(callable $callable)
+function curry($callable)
 {
     return _curry_array_args($callable, _rest(func_get_args()));
 }
@@ -15,7 +15,7 @@ function curry(callable $callable)
  * @param callable $callable
  * @return callable
  */
-function curry_right(callable $callable)
+function curry_right($callable)
 {
     return _curry_array_args($callable, _rest(func_get_args()), false);
 }
@@ -26,7 +26,7 @@ function curry_right(callable $callable)
  * @param bool $left
  * @return callable
  */
-function _curry_array_args(callable $callable, $args, $left = true)
+function _curry_array_args($callable, $args, $left = true)
 {
     return function () use ($callable, $args, $left) {
         if (_is_fullfilled($callable, $args)) {
@@ -68,7 +68,7 @@ function _rest(array $args)
  * @param $args
  * @return bool
  */
-function _is_fullfilled(callable $callable, $args)
+function _is_fullfilled($callable, $args)
 {
     return count($args) === _number_of_required_params($callable);
 }
