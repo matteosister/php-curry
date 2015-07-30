@@ -12,12 +12,34 @@ function curry($callable)
 }
 
 /**
+ * @param $callable
+ * @param array $args pass the arguments to be curried as an array
+ *
+ * @return callable
+ */
+function curry_args($callable, array $args)
+{
+    return _curry_array_args($callable, $args);
+}
+
+/**
  * @param callable $callable
  * @return callable
  */
 function curry_right($callable)
 {
     return _curry_array_args($callable, _rest(func_get_args()), false);
+}
+
+/**
+ * @param callable $callable
+ * @param array $args pass the arguments to be curried as an array
+ *
+ * @return callable
+ */
+function curry_right_args($callable, array $args)
+{
+    return _curry_array_args($callable, $args, false);
 }
 
 /**

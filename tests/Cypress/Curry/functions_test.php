@@ -19,6 +19,12 @@ class functionsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $identity(1));
     }
 
+    public function test_curry_args_identity()
+    {
+        $identity = C\curry_args(array(new TestSubject(), 'identity'), [1]);
+        $this->assertEquals(1, $identity(1));
+    }
+
     public function test_curry_with_one_later_param()
     {
         $curriedOne = C\curry(array(new TestSubject(), 'add2'), 1);
@@ -29,6 +35,13 @@ class functionsTest extends \PHPUnit_Framework_TestCase
     public function test_curry_with_two_later_param()
     {
         $curriedTwo = C\curry(array(new TestSubject(), 'add4'), 1, 1);
+        $this->assertInstanceOf('Closure', $curriedTwo);
+        $this->assertEquals(4, $curriedTwo(1, 1));
+    }
+
+    public function test_curry_args_with_two_later_param()
+    {
+        $curriedTwo = C\curry_args(array(new TestSubject(), 'add4'), [1, 1]);
         $this->assertInstanceOf('Closure', $curriedTwo);
         $this->assertEquals(4, $curriedTwo(1, 1));
     }
@@ -47,9 +60,22 @@ class functionsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(10, $divideBy10(100));
     }
 
+    public function test_curry_right_args()
+    {
+        $divideBy10 = C\curry_right_args(array(new TestSubject(), 'divide2'), [10]);
+        $this->assertInstanceOf('Closure', $divideBy10);
+        $this->assertEquals(10, $divideBy10(100));
+    }
+
     public function test_curry_right_immediate()
     {
         $divide3 = C\curry_right(array(new TestSubject(), 'divide3'), 5, 2, 20);
+        $this->assertEquals(2, $divide3());
+    }
+
+    public function test_curry_right_args_immediate()
+    {
+        $divide3 = C\curry_right_args(array(new TestSubject(), 'divide3'), [5, 2, 20]);
         $this->assertEquals(2, $divide3());
     }
 
@@ -69,6 +95,13 @@ class functionsTest extends \PHPUnit_Framework_TestCase
     public function test_curry_right_three_times()
     {
         $divideBy5 = C\curry_right(array(new TestSubject(), 'divide3'), 5);
+        $divideBy10And5 = $divideBy5(10);
+        $this->assertEquals(2, $divideBy10And5(100));
+    }
+
+    public function test_curry_right_args_three_times()
+    {
+        $divideBy5 = C\curry_right_args(array(new TestSubject(), 'divide3'), [5]);
         $divideBy10And5 = $divideBy5(10);
         $this->assertEquals(2, $divideBy10And5(100));
     }

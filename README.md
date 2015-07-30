@@ -59,6 +59,24 @@ echo $divide10By(10); // output 1
 echo $divideBy10(100); // output 10
 ```
 
+### Parameters as an array
+
+You can also curry a function and passing the parameters as an array, just use the \*_args version of the function
+
+``` php
+use Cypress\Curry as C;
+
+$divider = function ($a, $b) {
+    return $a / $b;
+};
+
+$division = C\curry_args($adder, [100, 10]);
+echo $division(); // output 10
+
+$division2 = C\curry_right_args($adder, [100, 10]);
+echo $division2(); // output 0.1
+```
+
 ### Optional parameters
 
 Optional parameters and currying do not play very nicely togheter. This library exclude optional parameters by default.
