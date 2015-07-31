@@ -2,6 +2,7 @@
 
 [![Code Coverage](https://scrutinizer-ci.com/g/matteosister/php-curry/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/matteosister/php-curry/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/matteosister/php-curry/badges/build.png?b=master)](https://scrutinizer-ci.com/g/matteosister/php-curry/build-status/master)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/437a51d1-9829-4e22-b37b-77c80dd3947f/mini.png)](https://insight.sensiolabs.com/projects/437a51d1-9829-4e22-b37b-77c80dd3947f)
 
 An implementation for currying in PHP
 
