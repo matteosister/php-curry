@@ -8,6 +8,8 @@ namespace Cypress\Curry;
  */
 function curry($callable)
 {
+    if (_number_of_required_params($callable) < 2)
+        return $callable;
     return _curry_array_args($callable, _rest(func_get_args()));
 }
 
@@ -92,7 +94,7 @@ function _rest(array $args)
  */
 function _is_fullfilled($callable, $args)
 {
-    return count($args) === _number_of_required_params($callable);
+    return count($args) >= _number_of_required_params($callable);
 }
 
 /**

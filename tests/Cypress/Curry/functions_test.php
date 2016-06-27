@@ -106,6 +106,25 @@ class functionsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, $divideBy10And5(100));
     }
 
+    public function test_curry_using_func_get_args()
+    {
+        $fnNoArgs = C\curry(function () { return func_get_args(); });
+        $this->assertEquals([], $fnNoArgs());
+        $this->assertEquals([1], $fnNoArgs(1));
+        $this->assertEquals([1, 2, 'three'], $fnNoArgs(1, 2, 'three'));
+
+        $fnOneArg = C\curry(function ($x) { return func_get_args(); });
+        $this->assertEquals([1], $fnNoArgs(1));
+        $this->assertEquals([1, 2, 'three'], $fnNoArgs(1, 2, 'three'));
+
+        $fnTwoArgs = C\curry(function ($x, $y) { return func_get_args(); });
+        $curried = $fnTwoArgs(1);
+        $this->assertEquals([1, 2], $fnNoArgs(1, 2));
+        $this->assertEquals([1, 2, 'three'], $fnNoArgs(1, 2, 'three'));
+        $this->assertEquals([1, 2], $curried(2));
+        $this->assertEquals([1, 2, 'three'], $curried(2, 'three'));
+    }
+
     public function test_rest()
     {
         $this->assertEquals(array(1), C\_rest(array(1, 1)));
