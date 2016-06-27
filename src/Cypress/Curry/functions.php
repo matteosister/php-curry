@@ -30,6 +30,8 @@ function curry_args($callable, array $args)
  */
 function curry_right($callable)
 {
+    if (_number_of_required_params($callable) < 2)
+        return _make_function($callable);
     return _curry_array_args($callable, _rest(func_get_args()), false);
 }
 
