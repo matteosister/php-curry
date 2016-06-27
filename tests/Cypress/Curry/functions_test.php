@@ -106,6 +106,60 @@ class functionsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, $divideBy10And5(100));
     }
 
+    public function test_curry_using_func_get_args()
+    {
+
+        $fnNoArgs = function () { return func_get_args(); };
+        $curried = C\curry($fnNoArgs);
+        $curriedRight = C\curry_right($fnNoArgs);
+
+        $this->assertEquals(array(), $fnNoArgs());
+        $this->assertEquals(array(), $curried());
+        $this->assertEquals(array(), $curriedRight());
+
+        $this->assertEquals(array(1), $fnNoArgs(1));
+        $this->assertEquals(array(1), $curried(1));
+        $this->assertEquals(array(1), $curriedRight(1));
+
+        $this->assertEquals(array(1, 2, 'three'), $fnNoArgs(1, 2, 'three'));
+        $this->assertEquals(array(1, 2, 'three'), $curried(1, 2, 'three'));
+        $this->assertEquals(array(1, 2, 'three'), $curriedRight(1, 2, 'three'));
+
+        $fnOneArg = function ($x) { return func_get_args(); };
+        $curried = C\curry($fnOneArg);
+        $curriedRight = C\curry_right($fnOneArg);
+
+        $this->assertEquals(array(1), $fnOneArg(1));
+        $this->assertEquals(array(1), $curried(1));
+        $this->assertEquals(array(1), $curriedRight(1));
+
+        $this->assertEquals(array(1, 2, 'three'), $fnOneArg(1, 2, 'three'));
+        $this->assertEquals(array(1, 2, 'three'), $curried(1, 2, 'three'));
+        $this->assertEquals(array(1, 2, 'three'), $curriedRight(1, 2, 'three'));
+
+        $fnTwoArgs = function ($x, $y) { return func_get_args(); };
+        $curried = C\curry($fnTwoArgs);
+        $curriedRight = C\curry_right($fnTwoArgs);
+
+        $curriedOne = $curried(1); 
+        $curriedRightOne = $curriedRight(2);
+        $curriedRightTwo = $curriedRight('three');
+
+        $this->assertEquals(array(1, 2), $fnTwoArgs(1, 2));
+        $this->assertEquals(array(1, 2), $curried(1, 2));
+        $this->assertEquals(array(1, 2), $curriedRight(2, 1));
+
+        $this->assertEquals(array(1, 2, 'three'), $fnTwoArgs(1, 2, 'three'));
+        $this->assertEquals(array(1, 2, 'three'), $curried(1, 2, 'three'));
+        $this->assertEquals(array(1, 2, 'three'), $curriedRight('three', 2, 1));
+
+        $this->assertEquals(array(1, 2), $curriedOne(2));
+        $this->assertEquals(array(1, 2), $curriedRightOne(1));
+
+        $this->assertEquals(array(1, 2, 'three'), $curriedOne(2, 'three'));
+        $this->assertEquals(array(1, 2, 'three'), $curriedRightTwo(2, 1));
+    }
+
     public function test_rest()
     {
         $this->assertEquals(array(1), C\_rest(array(1, 1)));

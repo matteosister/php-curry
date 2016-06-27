@@ -8,6 +8,8 @@ namespace Cypress\Curry;
  */
 function curry($callable)
 {
+    if (_number_of_required_params($callable) < 2)
+        return _make_function($callable);
     return _curry_array_args($callable, _rest(func_get_args()));
 }
 
@@ -28,6 +30,8 @@ function curry_args($callable, array $args)
  */
 function curry_right($callable)
 {
+    if (_number_of_required_params($callable) < 2)
+        return _make_function($callable);
     return _curry_array_args($callable, _rest(func_get_args()), false);
 }
 
@@ -92,7 +96,7 @@ function _rest(array $args)
  */
 function _is_fullfilled($callable, $args)
 {
-    return count($args) === _number_of_required_params($callable);
+    return count($args) >= _number_of_required_params($callable);
 }
 
 /**
@@ -109,4 +113,21 @@ function _number_of_required_params($callable)
     }
     $refl = new \ReflectionFunction($callable);
     return $refl->getNumberOfRequiredParameters();
+}
+
+/**
+ * if the callback is an array(instance, method), 
+ * it returns an equivalent function for PHP 5.3 compatibility.
+ *
+ * @internal 
+ * @param  callable $callable
+ * @return callable
+ */
+function _make_function($callable)
+{
+    if (is_array($callable))
+        return function() use($callable) {
+            return call_user_func_array($callable, func_get_args());
+        };
+    return $callable;
 }
