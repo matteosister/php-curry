@@ -160,6 +160,36 @@ class functionsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(1, 2, 'three'), $curriedRightTwo(2, 1));
     }
 
+    public function test_curry_with_placeholders()
+    {
+        $minus = C\curry(function ($x, $y) { return $x - $y; });
+        $decrement = $minus(C\__(), 1);
+
+        $this->assertEquals(9, $decrement(10));
+
+        $introduce = C\curry(function($name, $age, $job, $details = '') {
+            return "{$name}, {$age} years old, is a {$job} {$details}";
+        });
+
+        $introduceDeveloper = $introduce(C\__(), C\__(), 'Developer');
+        $this->assertEquals("Foo, 20 years old, is a Developer ", $introduceDeveloper('Foo', 20));
+
+        $introduceOld = $introduce(C\__(), 99, C\__());
+        $this->assertEquals("Foo, 99 years old, is a Developer and Cooker as well", $introduceOld('Foo', 'Developer', 'and Cooker as well'));
+
+        $introduceSkipName = $introduce(C\__());
+        $introduceSkipJob = $introduceSkipName(99, C\__());
+
+        $this->assertEquals("Foo, 99 years old, is a Cooker ", $introduceSkipJob('Foo', 'Cooker'));
+        $this->assertEquals("Foo, 99 years old, is a Cooker yumm !", $introduceSkipJob('Foo', 'Cooker', 'yumm !'));
+
+        $reduce = C\curry('array_reduce');
+        $add = function($x, $y){ return $x + $y; };
+        $sum = $reduce(C\__(), $add);
+
+        $this->assertEquals(10, $sum([1, 2, 3, 4], 0));
+    }
+
     public function test_rest()
     {
         $this->assertEquals(array(1), C\_rest(array(1, 1)));

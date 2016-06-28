@@ -2,6 +2,8 @@
 
 namespace Cypress\Curry;
 
+use Cypress\Curry\Placeholder;
+
 /**
  * @param callable $callable
  * @return callable
@@ -75,7 +77,26 @@ function _curry_array_args($callable, $args, $left = true)
  */
 function _execute($callable, $args, $left)
 {
-    return call_user_func_array($callable, $left ? $args : array_reverse($args));
+    if (! $left) {
+        $args = array_reverse($args);
+    }
+
+    $placeholders = _placeholder_positions($args);
+    if (0 < count($placeholders)) {
+        $n = _number_of_required_params($callable);
+        if ($n <= _last($placeholders[count($placeholders) - 1])) {
+            // This means that we have more placeholders then needed
+            // I know that throwing exceptions is not really the 
+            // functional way, but this case should not happen.
+            throw new \Exception("Argument Placeholder found on unexpected position !");
+        }
+        foreach ($placeholders as $i) {
+            $args[$i] = $args[$n];
+            array_splice($args, $n, 1);
+        }
+    }
+
+    return call_user_func_array($callable, $args);
 }
 
 /**
@@ -96,6 +117,9 @@ function _rest(array $args)
  */
 function _is_fullfilled($callable, $args)
 {
+    $args = array_filter($args, function($arg) {
+        return ! _is_placeholder($arg);
+    });
     return count($args) >= _number_of_required_params($callable);
 }
 
@@ -130,4 +154,53 @@ function _make_function($callable)
             return call_user_func_array($callable, func_get_args());
         };
     return $callable;
+}
+
+/**
+ * Checks if an argument is a placeholder.
+ *
+ * @internal
+ * @param  mixed  $arg
+ * @return boolean
+ */
+function _is_placeholder($arg)
+{
+    return $arg instanceof Placeholder;
+}
+
+/**
+ * Gets an array of placeholders positions in the given arguments.
+ *
+ * @internal
+ * @param  array $args
+ * @return array
+ */
+function _placeholder_positions($args)
+{
+    return array_keys(array_filter($args, 'Cypress\\Curry\\_is_placeholder'));
+}
+
+/**
+ * Get the last element in an array.
+ *
+ * @internal
+ * @param  array $array
+ * @return mixed
+ */
+function _last($array)
+{
+    return $array[count($array) - 1];
+}
+
+/**
+ * Gets a special placeholder value used to specify "gaps" within curried 
+ * functions, allowing partial application of any combination of arguments, 
+ * regardless of their positions. Should be used only for required arguments.
+ * When used, optional arguments must be at the end of the arguments list.
+ *
+ * @return Cypress\Curry\Placeholder
+ */
+function __()
+{
+    return Placeholder::get();
 }

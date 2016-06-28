@@ -104,3 +104,24 @@ var_dump(array_map(function ($finder) {
 ```
 
 *curry_right* have its fixed version named *curry_right_fixed*
+
+### Placeholders
+
+The function `__()` gets a special placeholder value used to specify "gaps" within curried functions, allowing partial application of any combination of arguments, regardless of their positions.
+
+```php
+$add = function($x, $y)
+{ 
+	return $x + $y; 
+};
+$reduce = C\curry('array_reduce');
+$sum = $reduce(C\__(), $add);
+
+echo $sum([1, 2, 3, 4], 0); // output 10
+```
+
+**Notes**:
+
+- Placeholders hould be used only for required arguments.
+
+- When used, optional arguments must be at the end of the arguments list.
