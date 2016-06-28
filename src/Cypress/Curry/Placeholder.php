@@ -9,7 +9,7 @@ namespace Cypress\Curry;
 class Placeholder {
 	private static $instance;
 	private function __construct(){}
-	public function get()
+	public static function get()
 	{
 		if(static::$instance === null)
 			static::$instance = new Placeholder;
