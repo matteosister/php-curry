@@ -187,7 +187,7 @@ class functionsTest extends \PHPUnit_Framework_TestCase
         $add = function($x, $y){ return $x + $y; };
         $sum = $reduce(C\__(), $add);
 
-        $this->assertEquals(10, $sum([1, 2, 3, 4], 0));
+        $this->assertEquals(10, $sum(array(1, 2, 3, 4), 0));
     }
 
     public function test_rest()
