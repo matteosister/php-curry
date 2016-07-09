@@ -6,7 +6,7 @@
 
 An implementation for currying in PHP
 
-Currying a function means the ability to pass a subset of arguments to a function, and receive back another function that accept the rest of the arguments. As soon as the last one is passed it gets back the final result.
+Currying a function means the ability to pass a subset of arguments to a function, and receive back another function that accepts the rest of the arguments. As soon as the last one is passed it gets back the final result.
 
 Like this:
 
@@ -62,7 +62,7 @@ echo $divideBy10(100); // output 10
 
 ### Parameters as an array
 
-You can also curry a function and passing the parameters as an array, just use the \*_args version of the function
+You can also curry a function and pass the parameters as an array, just use the \*_args version of the function.
 
 ``` php
 use Cypress\Curry as C;
@@ -71,16 +71,16 @@ $divider = function ($a, $b) {
     return $a / $b;
 };
 
-$division = C\curry_args($adder, [100, 10]);
+$division = C\curry_args($divider, [100, 10]);
 echo $division(); // output 10
 
-$division2 = C\curry_right_args($adder, [100, 10]);
+$division2 = C\curry_right_args($divider, [100, 10]);
 echo $division2(); // output 0.1
 ```
 
 ### Optional parameters
 
-Optional parameters and currying do not play very nicely togheter. This library exclude optional parameters by default.
+Optional parameters and currying do not play very nicely together. This library excludes optional parameters by default.
 
 ``` php
 $haystack = "haystack";
@@ -91,7 +91,7 @@ var_dump(array_map($strpos, $searches)); // output [0, 1, false]
 
 But strpos has an optional $offset parameter that by default has not been considered.
 
-If you want to take it into account you should fix the curry to a given length
+If you want to take this optional $offset parameter into account you should "fix" the curry to a given length.
 
 ``` php
 $haystack = "haystack";
@@ -103,7 +103,7 @@ var_dump(array_map(function ($finder) {
 }, $finders)); // output [false, 5, false]
 ```
 
-*curry_right* have its fixed version named *curry_right_fixed*
+*curry_right* has its own fixed version named *curry_right_fixed*
 
 ### Placeholders
 
@@ -122,6 +122,6 @@ echo $sum([1, 2, 3, 4], 0); // output 10
 
 **Notes**:
 
-- Placeholders hould be used only for required arguments.
+- Placeholders should be used only for required arguments.
 
 - When used, optional arguments must be at the end of the arguments list.
