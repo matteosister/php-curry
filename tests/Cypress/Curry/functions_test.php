@@ -4,8 +4,9 @@ namespace test\Cypress\Curry;
 
 use Cypress\Curry\CurriedFunction;
 use Cypress\Curry as C;
+use PHPUnit\Framework\TestCase;
 
-class functionsTest extends \PHPUnit_Framework_TestCase
+class functionsTest extends TestCase
 {
     public function test_curry_without_params()
     {
@@ -17,6 +18,18 @@ class functionsTest extends \PHPUnit_Framework_TestCase
     {
         $identity = C\curry(array(new TestSubject(), 'identity'), 1);
         $this->assertEquals(1, $identity(1));
+    }
+
+    public function test_curry_identity_function()
+    {
+        $func = C\curry(function ($v) { return $v; }, 'test string');
+        $this->assertEquals('test string', $func());
+    }
+
+    public function test_curry_args_identity_function()
+    {
+        $func = C\curry_args(function ($v) { return $v; }, ['test string']);
+        $this->assertEquals('test string', $func());
     }
 
     public function test_curry_args_identity()

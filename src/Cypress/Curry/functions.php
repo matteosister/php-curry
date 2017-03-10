@@ -10,8 +10,13 @@ use Cypress\Curry\Placeholder;
  */
 function curry($callable)
 {
-    if (_number_of_required_params($callable) < 2)
+    if (_number_of_required_params($callable) === 0) {
         return _make_function($callable);
+    }
+    if (_number_of_required_params($callable) === 1) {
+        return _curry_array_args($callable, _rest(func_get_args()));
+    }
+
     return _curry_array_args($callable, _rest(func_get_args()));
 }
 
