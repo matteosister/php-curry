@@ -11,13 +11,13 @@ Currying a function means the ability to pass a subset of arguments to a functio
 Like this:
 
 ``` php
-use Cypress\Curry as C;
+use function Cypress\Curry\curry;
 
 $adder = function ($a, $b, $c, $d) {
   return $a + $b + $c + $d;
 };
 
-$firstTwo = C\curry($adder, 1, 2);
+$firstTwo = curry($adder, 1, 2);
 echo $firstTwo(3, 4); // output 10
 
 $firstThree = $firstTwo(3);
@@ -37,9 +37,9 @@ composer require cypresslab/php-curry
 In your PHP scripts (with composer autoloader in place) just import the namespace and use it!
 
 ``` php
-use Cypress\Curry as C;
+use function Cypress\Curry\curry;
 
-$chunker = C\curry('array_chunk', ['a', 'b']);
+$chunker = curry('array_chunk', ['a', 'b']);
 var_dump($chunker(1)); // output [['a'], ['b']]
 var_dump($chunker(2)); // output [['a', 'b']]
 ```
@@ -49,12 +49,15 @@ var_dump($chunker(2)); // output [['a', 'b']]
 It's possible to curry a function from left (default) or from right.
 
 ``` php
+use function Cypress\Curry\curry;
+use function Cypress\Curry\curry_right;
+
 $divider = function ($a, $b) {
     return $a / $b;
 };
 
-$divide10By = C\curry($divider, 10);
-$divideBy10 = C\curry_right($divider, 10);
+$divide10By = curry($divider, 10);
+$divideBy10 = curry_right($divider, 10);
 
 echo $divide10By(10); // output 1
 echo $divideBy10(100); // output 10
@@ -65,16 +68,17 @@ echo $divideBy10(100); // output 10
 You can also curry a function and pass the parameters as an array, just use the \*_args version of the function.
 
 ``` php
-use Cypress\Curry as C;
+use function Cypress\Curry\curry_args;
+use function Cypress\Curry\curry_right_args;
 
 $divider = function ($a, $b) {
     return $a / $b;
 };
 
-$division = C\curry_args($divider, [100, 10]);
+$division = curry_args($divider, [100, 10]);
 echo $division(); // output 10
 
-$division2 = C\curry_right_args($divider, [100, 10]);
+$division2 = curry_right_args($divider, [100, 10]);
 echo $division2(); // output 0.1
 ```
 
@@ -83,9 +87,11 @@ echo $division2(); // output 0.1
 Optional parameters and currying do not play very nicely together. This library excludes optional parameters by default.
 
 ``` php
+use function Cypress\Curry\curry;
+
 $haystack = "haystack";
 $searches = ['h', 'a', 'z'];
-$strpos = C\curry('strpos', $haystack); // You can pass function as string too!
+$strpos = curry('strpos', $haystack); // You can pass function as string too!
 var_dump(array_map($strpos, $searches)); // output [0, 1, false]
 ```
 
@@ -94,9 +100,11 @@ But strpos has an optional $offset parameter that by default has not been consid
 If you want to take this optional $offset parameter into account you should "fix" the curry to a given length.
 
 ``` php
+use function Cypress\Curry\curry_fixed;
+
 $haystack = "haystack";
 $searches = ['h', 'a', 'z'];
-$strpos = C\curry_fixed(3, 'strpos', $haystack);
+$strpos = curry_fixed(3, 'strpos', $haystack);
 $finders = array_map($strpos, $searches);
 var_dump(array_map(function ($finder) {
     return $finder(2);
@@ -110,12 +118,14 @@ var_dump(array_map(function ($finder) {
 The function `__()` gets a special placeholder value used to specify "gaps" within curried functions, allowing partial application of any combination of arguments, regardless of their positions.
 
 ```php
+use function Cypress\Curry\__;
+
 $add = function($x, $y)
 { 
 	return $x + $y; 
 };
-$reduce = C\curry('array_reduce');
-$sum = $reduce(C\__(), $add);
+$reduce = curry('array_reduce');
+$sum = $reduce(__(), $add);
 
 echo $sum([1, 2, 3, 4], 0); // output 10
 ```
