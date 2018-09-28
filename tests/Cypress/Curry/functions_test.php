@@ -2,7 +2,6 @@
 
 namespace test\Cypress\Curry;
 
-use Cypress\Curry\CurriedFunction;
 use Cypress\Curry as C;
 use PHPUnit\Framework\TestCase;
 
@@ -14,10 +13,22 @@ class functionsTest extends TestCase
         $this->assertEquals(1, $simpleFunction());
     }
 
+    public function test_curry_constant()
+    {
+        $constant = C\curry(array(new TestSubject(), 'constant'));
+        $this->assertEquals(1, $constant());
+    }
+
     public function test_curry_identity()
     {
         $identity = C\curry(array(new TestSubject(), 'identity'), 1);
         $this->assertEquals(1, $identity(1));
+    }
+
+    public function test_curry_identity_without_params()
+    {
+        $identity = C\curry(array(new TestSubject(), 'identity'), 1);
+        $this->assertEquals(1, $identity());
     }
 
     public function test_curry_identity_function()
@@ -231,10 +242,32 @@ class functionsTest extends TestCase
             array(true, array('aaa', 'a'), 'strpos'),
         );
     }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage Argument Placeholder found on unexpected position !
+     */
+    public function test_unexpected_placeholder()
+    {
+        $fn = C\curry(function($a) { }, 22, C\__());
+        $fn(20);
+    }
+
+    public function test_placeholder()
+    {
+        $placeholder = C\Placeholder::get();
+
+        $this->assertSame($placeholder, C\Placeholder::get());
+        $this->assertEquals('__', (string)$placeholder);
+    }
 }
 
 class TestSubject
 {
+    public function constant() {
+        return 1;
+    }
+
     public function identity($a) {
         return $a;
     }

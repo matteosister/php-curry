@@ -89,7 +89,7 @@ function _execute($callable, $args, $left)
     $placeholders = _placeholder_positions($args);
     if (0 < count($placeholders)) {
         $n = _number_of_required_params($callable);
-        if ($n <= _last($placeholders[count($placeholders) - 1])) {
+        if ($n <= _last($placeholders)) {
             // This means that we have more placeholders then needed
             // I know that throwing exceptions is not really the 
             // functional way, but this case should not happen.
