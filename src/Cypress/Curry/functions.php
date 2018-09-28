@@ -86,9 +86,10 @@ function _execute($callable, $args, $left)
         $args = array_reverse($args);
     }
 
+    $n = _number_of_required_params($callable);
+
     $placeholders = _placeholder_positions($args);
     if (0 < count($placeholders)) {
-        $n = _number_of_required_params($callable);
         if ($n <= _last($placeholders)) {
             // This means that we have more placeholders then needed
             // I know that throwing exceptions is not really the 
@@ -99,6 +100,11 @@ function _execute($callable, $args, $left)
             $args[$i] = $args[$n];
             array_splice($args, $n, 1);
         }
+    }
+
+    if (count($args) > $n) {
+        $extra = array_splice($args, $left ? $n : 0, count($args) - $n);
+        $args = array_merge($args, $left ? $extra : array_reverse($extra));
     }
 
     return call_user_func_array($callable, $args);

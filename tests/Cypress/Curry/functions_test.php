@@ -22,13 +22,13 @@ class functionsTest extends TestCase
     public function test_curry_identity()
     {
         $identity = C\curry(array(new TestSubject(), 'identity'), 1);
-        $this->assertEquals(1, $identity(1));
+        $this->assertEquals(1, $identity());
     }
 
-    public function test_curry_identity_without_params()
+    public function test_curry_identity_with_additional_arg()
     {
         $identity = C\curry(array(new TestSubject(), 'identity'), 1);
-        $this->assertEquals(1, $identity());
+        $this->assertEquals(1, $identity(10));
     }
 
     public function test_curry_identity_function()
@@ -46,7 +46,7 @@ class functionsTest extends TestCase
     public function test_curry_args_identity()
     {
         $identity = C\curry_args(array(new TestSubject(), 'identity'), array(1));
-        $this->assertEquals(1, $identity(1));
+        $this->assertEquals(1, $identity());
     }
 
     public function test_curry_with_one_later_param()
@@ -54,6 +54,13 @@ class functionsTest extends TestCase
         $curriedOne = C\curry(array(new TestSubject(), 'add2'), 1);
         $this->assertInstanceOf('Closure', $curriedOne);
         $this->assertEquals(2, $curriedOne(1));
+    }
+
+    public function test_curry_with_additional_arg()
+    {
+        $curriedOne = C\curry(array(new TestSubject(), 'add2'), 1);
+        $this->assertInstanceOf('Closure', $curriedOne);
+        $this->assertEquals(3, $curriedOne(2, 7));
     }
 
     public function test_curry_with_two_later_param()
@@ -82,6 +89,13 @@ class functionsTest extends TestCase
         $divideBy10 = C\curry_right(array(new TestSubject(), 'divide2'), 10);
         $this->assertInstanceOf('Closure', $divideBy10);
         $this->assertEquals(10, $divideBy10(100));
+    }
+
+    public function test_curry_right_additional_arg()
+    {
+        $divideBy10 = C\curry_right(array(new TestSubject(), 'divide2'), 10);
+        $this->assertInstanceOf('Closure', $divideBy10);
+        $this->assertEquals(10, $divideBy10(100, 20));
     }
 
     public function test_curry_right_args()
@@ -167,7 +181,6 @@ class functionsTest extends TestCase
 
         $curriedOne = $curried(1); 
         $curriedRightOne = $curriedRight(2);
-        $curriedRightTwo = $curriedRight('three');
 
         $this->assertEquals(array(1, 2), $fnTwoArgs(1, 2));
         $this->assertEquals(array(1, 2), $curried(1, 2));
@@ -175,13 +188,13 @@ class functionsTest extends TestCase
 
         $this->assertEquals(array(1, 2, 'three'), $fnTwoArgs(1, 2, 'three'));
         $this->assertEquals(array(1, 2, 'three'), $curried(1, 2, 'three'));
-        $this->assertEquals(array(1, 2, 'three'), $curriedRight('three', 2, 1));
+        $this->assertEquals(array(1, 2, 'three'), $curriedRight(2, 1, 'three'));
 
         $this->assertEquals(array(1, 2), $curriedOne(2));
         $this->assertEquals(array(1, 2), $curriedRightOne(1));
 
         $this->assertEquals(array(1, 2, 'three'), $curriedOne(2, 'three'));
-        $this->assertEquals(array(1, 2, 'three'), $curriedRightTwo(2, 1));
+        $this->assertEquals(array(1, 2, 'three', 'IV'), $curriedRightOne(1, 'three', 'IV'));
     }
 
     public function test_curry_with_placeholders()
