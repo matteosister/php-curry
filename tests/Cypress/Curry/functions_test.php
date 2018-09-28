@@ -214,17 +214,48 @@ class functionsTest extends TestCase
         $introduceOld = $introduce(C\__(), 99, C\__());
         $this->assertEquals("Foo, 99 years old, is a Developer and Cooker as well", $introduceOld('Foo', 'Developer', 'and Cooker as well'));
 
-        $introduceSkipName = $introduce(C\__());
-        $introduceSkipJob = $introduceSkipName(99, C\__());
-
-        $this->assertEquals("Foo, 99 years old, is a Cooker ", $introduceSkipJob('Foo', 'Cooker'));
-        $this->assertEquals("Foo, 99 years old, is a Cooker yumm !", $introduceSkipJob('Foo', 'Cooker', 'yumm !'));
+        $introduceOldDeveloper = $introduceDeveloper(C\__(), 99, C\__());
+        $this->assertEquals("Foo, 99 years old, is a Developer cool !", $introduceOldDeveloper('Foo', 'cool !'));
 
         $reduce = C\curry('array_reduce');
         $add = function($x, $y){ return $x + $y; };
         $sum = $reduce(C\__(), $add);
 
         $this->assertEquals(10, $sum(array(1, 2, 3, 4), 0));
+    }
+
+    public function test_curry_with_placeholders_and_optional_arg()
+    {
+        $subtractMulti = function($a, $b, $c = 1) {
+            return $a - ($b * $c);
+        };
+
+        $subtractDoubleFrom = C\curry($subtractMulti, C\__(), C\__(), 2);
+        $this->assertEquals(40, $subtractDoubleFrom(100, 30));
+
+        $subtractDoubleFrom100 = $subtractDoubleFrom(100);
+        $this->assertInstanceOf('Closure', $subtractDoubleFrom100);
+        $this->assertEquals(40, $subtractDoubleFrom100(30));
+
+        $subtractDoubleFrom = C\curry($subtractMulti, C\__(), C\__(), 2);
+        $this->assertEquals(40, $subtractDoubleFrom(100, 30, 999));
+    }
+
+    public function test_curry_right_with_placeholders_and_optional_arg()
+    {
+        $subtractMulti = function($a, $b, $c = 1) {
+            return $a - ($b * $c);
+        };
+
+        $subtractDouble = C\curry_right($subtractMulti, C\__(), C\__(), 2);
+        $this->assertEquals(40, $subtractDouble(30, 100));
+
+        $subtract60 = $subtractDouble(30);
+        $this->assertInstanceOf('Closure', $subtract60);
+        $this->assertEquals(40, $subtract60(100));
+
+        $subtractDouble = C\curry_right($subtractMulti, C\__(), C\__(), 2);
+        $this->assertEquals(40, $subtractDouble(30, 100, 999));
     }
 
     public function test_rest()
@@ -254,16 +285,6 @@ class functionsTest extends TestCase
             array(true, array(1, 2), array(new TestSubject(), 'add2')),
             array(true, array('aaa', 'a'), 'strpos'),
         );
-    }
-
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Argument Placeholder found on unexpected position !
-     */
-    public function test_unexpected_placeholder()
-    {
-        $fn = C\curry(function($a) { }, 22, C\__());
-        $fn(20);
     }
 
     public function test_placeholder()

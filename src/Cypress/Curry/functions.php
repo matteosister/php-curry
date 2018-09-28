@@ -62,10 +62,8 @@ function curry_right_args($callable, array $args)
 function _curry_array_args($callable, $args, $left = true)
 {
     return function () use ($callable, $args, $left) {
-        if (_is_fullfilled($callable, $args)) {
-            return _execute($callable, $args, $left);
-        }
-        $newArgs = array_merge($args, func_get_args());
+        $newArgs = _merge_args($args, func_get_args(), $left);
+
         if (_is_fullfilled($callable, $newArgs)) {
             return _execute($callable, $newArgs, $left);
         }
@@ -87,20 +85,6 @@ function _execute($callable, $args, $left)
     }
 
     $n = _number_of_required_params($callable);
-
-    $placeholders = _placeholder_positions($args);
-    if (0 < count($placeholders)) {
-        if ($n <= _last($placeholders)) {
-            // This means that we have more placeholders then needed
-            // I know that throwing exceptions is not really the 
-            // functional way, but this case should not happen.
-            throw new \Exception("Argument Placeholder found on unexpected position !");
-        }
-        foreach ($placeholders as $i) {
-            $args[$i] = $args[$n];
-            array_splice($args, $n, 1);
-        }
-    }
 
     if (count($args) > $n) {
         $extra = array_splice($args, $left ? $n : 0, count($args) - $n);
@@ -128,10 +112,8 @@ function _rest(array $args)
  */
 function _is_fullfilled($callable, $args)
 {
-    $args = array_filter($args, function($arg) {
-        return ! _is_placeholder($arg);
-    });
-    return count($args) >= _number_of_required_params($callable);
+    return count($args) >= _number_of_required_params($callable) &&
+        !in_array(Placeholder::get(), $args, true);
 }
 
 /**
@@ -180,27 +162,20 @@ function _is_placeholder($arg)
 }
 
 /**
- * Gets an array of placeholders positions in the given arguments.
- *
- * @internal
- * @param  array $args
- * @return array
+ * Merge arguments, replacing placeholders
  */
-function _placeholder_positions($args)
+function _merge_args($args, $newArgs, $left = true)
 {
-    return array_keys(array_filter($args, 'Cypress\\Curry\\_is_placeholder'));
-}
+    foreach ($args as &$arg) {
+        if (!_is_placeholder($arg))
+            continue;
 
-/**
- * Get the last element in an array.
- *
- * @internal
- * @param  array $array
- * @return mixed
- */
-function _last($array)
-{
-    return $array[count($array) - 1];
+        $arg = array_shift($newArgs);
+        if (empty($newArgs))
+            break;
+    }
+
+    return array_merge($args, $newArgs);
 }
 
 /**
