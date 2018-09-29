@@ -92,6 +92,22 @@ $division2 = C\curry_right_args($divider, [100, 10]);
 echo $division2(); // output 0.1
 ```
 
+### Fixed number of parameters
+
+You can should "fix" the curry to a given length by starting with the number of arguments.
+
+This can be used to make sure the curry ignores optional arguments or to set optional arguments when creating the curry.
+
+``` php
+$divider = function ($a, $b, $c = 1) {
+    return $a / ($b * $c);
+};
+
+$divide10ByProduct = C\curry(2, $divider, 10);
+$divideByTripple = C\curry_right(2, $divider, 3);
+$divideBy200 = C\curry_right(1, $divider, 10, 20);
+```
+
 ### Placeholders
 
 The function `__()` gets a special placeholder value used to specify "gaps" within curried functions, allowing partial application of any combination of arguments, regardless of their positions.

@@ -5,23 +5,24 @@ namespace Cypress\Curry;
 use Cypress\Curry\Placeholder;
 
 /**
- * @param callable $callable
+ * @param callable $_
  * @return callable
  */
-function curry($callable)
+function curry($_)
 {
-    if (_number_of_required_params($callable) === 0) {
+    $args = func_get_args();
+    $count = is_int($_) ? array_shift($args) + max(count($args) - 1, 0) : null;
+    $callable = array_shift($args);
+
+    if ($count === 0 || (!isset($count) && _number_of_required_params($callable) === 0)) {
         return _make_function($callable);
     }
-    if (_number_of_required_params($callable) === 1) {
-        return _curry_array_args($callable, _rest(func_get_args()));
-    }
 
-    return _curry_array_args($callable, _rest(func_get_args()));
+    return _curry_array_args($callable, $args, $count);
 }
 
 /**
- * @param $callable
+ * @param callable $callable
  * @param array $args pass the arguments to be curried as an array
  *
  * @return callable
@@ -32,14 +33,20 @@ function curry_args($callable, array $args)
 }
 
 /**
- * @param callable $callable
+ * @param callable $_
  * @return callable
  */
-function curry_right($callable)
+function curry_right($_)
 {
-    if (_number_of_required_params($callable) < 2)
+    $args = func_get_args();
+    $count = is_int($_) ? array_shift($args) + max(count($args) - 1, 0) : null;
+    $callable = array_shift($args);
+
+    if ($count === 0 || (!isset($count) && _number_of_required_params($callable) === 0)) {
         return _make_function($callable);
-    return _curry_array_args($callable, _rest(func_get_args()), false);
+    }
+
+    return _curry_array_args($callable, $args, $count, false);
 }
 
 /**
@@ -50,45 +57,52 @@ function curry_right($callable)
  */
 function curry_right_args($callable, array $args)
 {
-    return _curry_array_args($callable, $args, false);
+    return _curry_array_args($callable, $args, null,false);
 }
+
 
 /**
  * @param callable $callable
  * @param $args
  * @param bool $left
+ * @param int  $count
  * @return callable
  */
-function _curry_array_args($callable, $args, $left = true)
+function _curry_array_args($callable, $args, $count = null, $left = true)
 {
-    return function () use ($callable, $args, $left) {
+    return function () use ($callable, $args, $left, $count) {
         $newArgs = _merge_args($args, func_get_args(), $left);
 
-        if (_is_fullfilled($callable, $newArgs)) {
-            return _execute($callable, $newArgs, $left);
+        if (_is_fullfilled($callable, $newArgs, $count)) {
+            return _execute($callable, $newArgs, $count, $left);
         }
-        return _curry_array_args($callable, $newArgs, $left);
+
+        return _curry_array_args($callable, $newArgs, $count, $left);
     };
 }
+
 
 /**
  * @internal
  * @param $callable
  * @param $args
+ * @param $count
  * @param $left
  * @return mixed
  */
-function _execute($callable, $args, $left)
+function _execute($callable, $args, $count, $left)
 {
     if (! $left) {
         $args = array_reverse($args);
     }
 
-    $n = _number_of_required_params($callable);
+    $n = isset($count) ? $count : _number_of_required_params($callable);
 
     if (count($args) > $n) {
         $extra = array_splice($args, $left ? $n : 0, count($args) - $n);
-        $args = array_merge($args, $left ? $extra : array_reverse($extra));
+
+        if (!isset($count))
+            $args = array_merge($args, $left ? $extra : array_reverse($extra));
     }
 
     return call_user_func_array($callable, $args);
@@ -110,9 +124,13 @@ function _rest(array $args)
  * @param $args
  * @return bool
  */
-function _is_fullfilled($callable, $args)
+function _is_fullfilled($callable, $args, $count = null)
 {
-    return count($args) >= _number_of_required_params($callable) &&
+    if (!isset($count)) {
+        $count = _number_of_required_params($callable);
+    }
+
+    return count($args) >= $count &&
         !in_array(Placeholder::get(), $args, true);
 }
 

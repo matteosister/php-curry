@@ -258,6 +258,38 @@ class functionsTest extends TestCase
         $this->assertEquals(40, $subtractDouble(30, 100, 999));
     }
 
+    public function test_curry_fixed()
+    {
+        $subtractMulti = function($a, $b, $c = 1) {
+            return $a - ($b * $c);
+        };
+
+        $subtractFrom100 = C\curry(1, $subtractMulti, 100);
+        $this->assertInstanceOf('Closure', $subtractFrom100);
+        $this->assertEquals(70, $subtractFrom100(30, 10));
+
+        $subtractFrom100 = C\curry(2, $subtractMulti, 100);
+        $subtractDoubleFrom100 = $subtractFrom100(2);
+        $this->assertInstanceOf('Closure', $subtractDoubleFrom100);
+        $this->assertEquals(80, $subtractDoubleFrom100(10));
+    }
+
+    public function test_curry_right_fixed()
+    {
+        $subtractMulti = function($a, $b, $c = 1) {
+            return $a - ($b * $c);
+        };
+
+        $subtract100 = C\curry_right(1, $subtractMulti, 100);
+        $this->assertInstanceOf('Closure', $subtract100);
+        $this->assertEquals(200, $subtract100(300, 10));
+
+        $subtractDoubleFrom = C\curry_right(2, $subtractMulti, 2);
+        $subtractTwentyFrom = $subtractDoubleFrom(10);
+        $this->assertInstanceOf('Closure', $subtractTwentyFrom);
+        $this->assertEquals(80, $subtractTwentyFrom(100));
+    }
+
     public function test_rest()
     {
         $this->assertEquals(array(1), C\_rest(array(1, 1)));
