@@ -5,6 +5,8 @@ namespace Cypress\Curry;
  * This class is created simply to define a special type 
  * for the placeholder. As defining a constant, even 
  * a random one, could collide with other values.
+ *
+ * @internal
  */
 class Placeholder {
 	private static $instance;
