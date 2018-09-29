@@ -60,6 +60,20 @@ echo $divide10By(10); // output 1
 echo $divideBy10(100); // output 10
 ```
 
+**Caveat** Only the required arguments go from right, optional argument are apppended (from left).
+
+``` php
+$divider = function ($a, $b, $decimals = 0, $dec_point = '.') {
+    return number_format($a / $b, $decimals, $dec_point);
+};
+
+$divide10By = C\curry($divider, 10);
+$divideBy10 = C\curry_right($divider, 10);
+
+echo $divide10By(10, 2, ','); // output 1,00
+echo $divideBy10(100, 2, ','); // output 10,00
+```
+
 ### Parameters as an array
 
 You can also curry a function and pass the parameters as an array, just use the \*_args version of the function.
@@ -77,33 +91,6 @@ echo $division(); // output 10
 $division2 = C\curry_right_args($divider, [100, 10]);
 echo $division2(); // output 0.1
 ```
-
-### Optional parameters
-
-Optional parameters and currying do not play very nicely together. This library excludes optional parameters by default.
-
-``` php
-$haystack = "haystack";
-$searches = ['h', 'a', 'z'];
-$strpos = C\curry('strpos', $haystack); // You can pass function as string too!
-var_dump(array_map($strpos, $searches)); // output [0, 1, false]
-```
-
-But strpos has an optional $offset parameter that by default has not been considered.
-
-If you want to take this optional $offset parameter into account you should "fix" the curry to a given length.
-
-``` php
-$haystack = "haystack";
-$searches = ['h', 'a', 'z'];
-$strpos = C\curry_fixed(3, 'strpos', $haystack);
-$finders = array_map($strpos, $searches);
-var_dump(array_map(function ($finder) {
-    return $finder(2);
-}, $finders)); // output [false, 5, false]
-```
-
-*curry_right* has its own fixed version named *curry_right_fixed*
 
 ### Placeholders
 
