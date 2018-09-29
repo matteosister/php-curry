@@ -97,18 +97,13 @@ echo $division2(); // output 0.1
 The function `__()` gets a special placeholder value used to specify "gaps" within curried functions, allowing partial application of any combination of arguments, regardless of their positions.
 
 ```php
-$add = function($x, $y)
-{ 
-	return $x + $y; 
-};
-$reduce = C\curry('array_reduce');
-$sum = $reduce(C\__(), $add);
+use Cypress\Curry as C;
 
-echo $sum([1, 2, 3, 4], 0); // output 10
+$redact = C\curry('str_replace', C\__(), "***", C\__());
+
+$text = "Jack and Jill went up the hill to fetch a pail of water. Jack fell down and broke his crown and Jill came tumbling after.";
+
+echo $redact(['Jack', 'Jill'], $text);
+// *** and *** went up the hill to fetch a pail of water. *** fell down and broke his crown and *** came tumbling after.
 ```
 
-**Notes**:
-
-- Placeholders should be used only for required arguments.
-
-- When used, optional arguments must be at the end of the arguments list.
