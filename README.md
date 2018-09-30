@@ -78,6 +78,28 @@ $division2 = C\curry_right_args($divider, [100, 10]);
 echo $division2(); // output 0.1
 ```
 
+### Operators
+
+Besides functions, it's also possible to curry operators. The following operators are supported:
+
+``` php
+use Cypress\Curry as C;
+
+$addTen = C\curry('+', 10);
+echo $addTen(4); // output 14
+
+$atLeast10 = C\curry('>=', 10);
+echo $atLeast10(1) ? 'more' : 'less'; // output less
+```
+
+| Operator types                                               |                                                |
+| ------------------------------------------------------------ | ---------------------------------------------- |
+| [Arithmetic Operators](https://php.net/operators.arithmetic) | `+`, `-`, `*`, `/`, `%`, `**`                  |
+| [Bitwise Operators](https://php.net/operators.bitwise)       | `&`, `∣`, `^`, `~`, `<<`, `>>`                 |
+| [Comparison Operators](https://php.net/operators.comparison) | `==`, `===`, `!=`, `!==`, `<`, `>`, `<=`, `>=` |
+| [Logical Operators](https://php.net/operators.logical)       | `and`/`&&`, `or`/`∣∣`, `xor`, `!`/`not`        |
+| [String Operator](https://php.net/operators.string)          | `.`                                            |
+
 ### Optional parameters
 
 Optional parameters and currying do not play very nicely together. This library excludes optional parameters by default.
