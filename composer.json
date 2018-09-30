@@ -5,11 +5,15 @@
     "license": "MIT",
     "minimum-stability": "stable",
     "require": {
-        "php": ">=5.3.2"
+        "php": ">=5.6.0",
+        "ext-ctype": "*"
     },
     "autoload": {
         "psr-0": {"Cypress\\Curry": "src"},
-        "files": ["src/Cypress/Curry/functions.php"]
+        "files": [
+            "src/Cypress/Curry/functions.php",
+            "src/Cypress/Curry/operators.php"
+        ]
     },
     "extra": {
         "branch-alias": {

@@ -5,11 +5,14 @@ namespace Cypress\Curry;
 use Cypress\Curry\Placeholder;
 
 /**
- * @param callable $callable
+ * @param callable|string $callable
  * @return callable
  */
 function curry($callable)
 {
+    if (_is_operator($callable))
+        $callable = _operator_function($callable);
+
     if (_number_of_required_params($callable) === 0) {
         return _make_function($callable);
     }
@@ -28,6 +31,9 @@ function curry($callable)
  */
 function curry_args($callable, array $args)
 {
+    if (_is_operator($callable))
+        $callable = _operator_function($callable);
+
     return _curry_array_args($callable, $args);
 }
 
@@ -37,6 +43,9 @@ function curry_args($callable, array $args)
  */
 function curry_right($callable)
 {
+    if (_is_operator($callable))
+        $callable = _operator_function($callable);
+
     if (_number_of_required_params($callable) < 2)
         return _make_function($callable);
     return _curry_array_args($callable, _rest(func_get_args()), false);
@@ -50,6 +59,9 @@ function curry_right($callable)
  */
 function curry_right_args($callable, array $args)
 {
+    if (_is_operator($callable))
+        $callable = _operator_function($callable);
+
     return _curry_array_args($callable, $args, false);
 }
 
@@ -158,6 +170,37 @@ function _make_function($callable)
         return function() use($callable) {
             return call_user_func_array($callable, func_get_args());
         };
+
+    return $callable;
+}
+
+/**
+ * Checks if the callable is an operator.
+ *
+ * @internal
+ * @param $callable
+ * @return boolean
+ */
+function _is_operator($callable)
+{
+    return is_string($callable) && strlen($callable) <= 3 &&
+        (ctype_punct($callable) || in_array($callable, ['and', 'or', 'xor', 'not']));
+}
+
+/**
+ * @internal
+ * @param string $operator
+ * @return callable
+ */
+function _operator_function($operator)
+{
+    $callable = __NAMESPACE__ . '\\_operator_' .
+        (ctype_punct($operator) ? sha1($operator) : $operator);
+
+    if (!function_exists($callable)) {
+        throw new \Exception("Operator '$operator' can't be used as curry function");
+    }
+
     return $callable;
 }
 

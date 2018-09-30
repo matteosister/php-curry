@@ -2,7 +2,6 @@
 
 namespace test\Cypress\Curry;
 
-use Cypress\Curry\CurriedFunction;
 use Cypress\Curry as C;
 use PHPUnit\Framework\TestCase;
 
